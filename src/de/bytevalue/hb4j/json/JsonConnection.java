@@ -87,7 +87,7 @@ public final class JsonConnection extends JsonConnectionListenerPool<JsonConnect
 		
 		request.setId(this.requestId++);
 		
-		this.onRequest(request);
+		this.onBeforeRequest(request);
 		
 		this.os.write(request.getBytes());
 		this.os.flush();

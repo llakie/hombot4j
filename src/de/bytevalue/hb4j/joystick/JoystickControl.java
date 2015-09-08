@@ -5,7 +5,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class JoystickControl extends KeyAdapter {
-	private static final int MOVEL_COMMAND_INTERVAL = 1000;
+	private static final int MOVE_COMMAND_INTERVAL = 1000;
 	private JoystickControlListener listener;
 	private Timer timer;
 	private TimerTask sendMoveTask;
@@ -41,7 +41,7 @@ public class JoystickControl extends KeyAdapter {
 			}
 		};
 		
-		this.timer.schedule(this.sendMoveTask, 0, MOVEL_COMMAND_INTERVAL);
+		this.timer.schedule(this.sendMoveTask, 0, MOVE_COMMAND_INTERVAL);
 	}
 	
 	public synchronized void stop() {

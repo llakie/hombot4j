@@ -16,7 +16,7 @@ public class DefaultJsonConnectionListener extends JsonConnectionListener {
 	public void onDisconnect() {}
 
 	@Override
-	public void onRequest(JsonRequest request) {}
+	public void onBeforeRequest(JsonRequest request) {}
 
 	@Override
 	public void onResponse(JsonConnection conn, JsonResponse response) {}

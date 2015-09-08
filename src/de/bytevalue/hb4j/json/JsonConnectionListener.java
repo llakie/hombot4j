@@ -50,10 +50,10 @@ public abstract class JsonConnectionListener {
 		});
 	}
 	
-	public abstract void onRequest(JsonRequest request);
+	public abstract void onBeforeRequest(JsonRequest request);
 	public final void executeOnRequest(JsonRequest request) {
 		JsonConnectionListener.threadPool.execute(() -> {
-			this.onRequest(request);
+			this.onBeforeRequest(request);
 		});
 	}
 	

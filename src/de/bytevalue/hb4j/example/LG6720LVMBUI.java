@@ -103,9 +103,9 @@ public class LG6720LVMBUI extends JFrame {
 			}
 			
 			@Override
-			public void onRequest(JsonRequest request) {
+			public void onBeforeRequest(JsonRequest request) {
 				System.out.println(">>>" + new String(request.getPayload()));
-				super.onRequest(request);
+				super.onBeforeRequest(request);
 			}
 			
 			@Override

@@ -13,7 +13,7 @@ public class DebugJsonConnectionListener extends JsonConnectionListener {
 	}
 	
 	@Override
-	public void onRequest(JsonRequest request) {
+	public void onBeforeRequest(JsonRequest request) {
 		System.out.println("<--- onRequest()");
 		System.out.println("Sending: " + new String(request.getPayload(), Charset.forName("UTF-8")));
 		System.out.println("Header");

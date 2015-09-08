@@ -30,7 +30,7 @@ public class JsonConnectionListenerPool<T extends JsonConnectionListener> extend
 	}
 
 	@Override
-	public void onRequest(JsonRequest request) {
+	public void onBeforeRequest(JsonRequest request) {
 		for(JsonConnectionListener listener: this.listeners) {
 			listener.executeOnRequest(request);
 		}
