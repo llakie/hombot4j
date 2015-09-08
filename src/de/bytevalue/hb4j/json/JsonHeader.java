@@ -3,6 +3,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class JsonHeader {
+	public static final short MAGIC_NUMBER = 0x40D;
 	public static final int SIZE = 12;
 	
 	private int id = 0;
@@ -64,8 +65,8 @@ public class JsonHeader {
 	public byte[] getBytes() {
 		byte[] headerData = new byte[JsonHeader.SIZE];
 		
-		headerData[0] = 13;
-		headerData[1] = 4;
+		ByteBuffer.wrap(headerData, 0, 2).order(ByteOrder.LITTLE_ENDIAN).putShort(JsonHeader.MAGIC_NUMBER);
+		
 		headerData[2] = (byte)this.id;
 		headerData[3] = (byte)(this.paramInt2 & 0xFF);
 		
