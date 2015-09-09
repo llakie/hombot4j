@@ -12,4 +12,12 @@ enum CleanMode {
 	public String getAPIName() {
 		return apiName;
 	}
+	
+	public static CleanMode fromShortName(String name) {
+		switch(name) {
+			case "ZZ": return CleanMode.ZIGZAG;
+			// Case SB
+			default: return CleanMode.CELL;
+		}
+	}
 }

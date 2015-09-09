@@ -24,6 +24,7 @@ public class LG6720LVMBModel extends HombotModel {
 	private static final String TAG_ROBOT_STATE = "ROBOT_STATE";
 	private static final String TAG_TURBO = "TURBO";
 	private static final String TAG_JOYSTICK = "JOY";
+	private static final String TAG_RESP_RSVSTATE = "RESP_RSVSTATE";
 	
 	private boolean modelInited = false;
 	
@@ -38,6 +39,7 @@ public class LG6720LVMBModel extends HombotModel {
 	private String version;
 	private String voiceMode;
 	private JoystickDirection direction = null;
+	private Reservation reservation;
 	
 	public boolean isTurboEnabled() {
 		return this.turboEnabled;
@@ -73,6 +75,14 @@ public class LG6720LVMBModel extends HombotModel {
 	
 	public JoystickDirection getDirection() {
 		return this.direction;
+	}
+	
+	public boolean hasReservation() {
+		return this.reservation != null;
+	}
+	
+	public Reservation getReservation() {
+		return reservation;
 	}
 	
 	protected void apply(JsonResponse response) {
@@ -119,7 +129,12 @@ public class LG6720LVMBModel extends HombotModel {
 			keyStack.addLast(key);
 			
 			if(object.optJSONArray(key) != null) {
-				this.parseJsonArray(object.optJSONArray(key), keyStack);
+				if(key.equals(TAG_RESP_RSVSTATE)) {
+					this.reservation = new Reservation(object.optJSONArray(key));
+				}
+				else {
+					this.parseJsonArray(object.optJSONArray(key), keyStack);
+				}
 			}
 			else if(object.optJSONObject(key) != null) {
 				this.parseJsonObject(object.optJSONObject(key), keyStack);
@@ -182,6 +197,13 @@ public class LG6720LVMBModel extends HombotModel {
 				}
 				
 				this.modelChangeDetected = true;
+				break;
+			}
+			case TAG_RESP_RSVSTATE: {
+				if(!Boolean.valueOf(value)) {
+					this.reservation = null;
+					this.modelChangeDetected = true;
+				}
 			}
 		}
 	}
