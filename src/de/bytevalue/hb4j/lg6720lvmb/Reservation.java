@@ -1,8 +1,12 @@
 package de.bytevalue.hb4j.lg6720lvmb;
 
+import java.io.Serializable;
+
 import org.json.JSONArray;
 
-public class Reservation {
+public class Reservation implements Serializable {
+	private static final long serialVersionUID = -1169783792792530794L;
+	
 	private int hour;
 	private int minute;
 	private boolean isRepeat;

@@ -99,6 +99,7 @@ public class LG6720LVMBUI extends JFrame {
 		this.model.addListener(new HombotModelListener() {
 			@Override
 			public void onModelChange(int requestId) {
+				System.out.println("Model changed");
 				updateUI();
 			}
 			

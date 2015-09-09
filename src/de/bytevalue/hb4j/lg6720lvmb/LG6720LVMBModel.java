@@ -1,5 +1,6 @@
 package de.bytevalue.hb4j.lg6720lvmb;
 
+import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
@@ -14,6 +15,8 @@ import de.bytevalue.hb4j.json.JsonConnectionListener;
 import de.bytevalue.hb4j.json.JsonResponse;
 
 public class LG6720LVMBModel extends HombotModel {
+	private static final long serialVersionUID = -3507480247871144027L;
+	
 	private static final String TAG_CONNECT_INIT = "CONNECT_INIT";
 	private static final String TAG_VOICEMODE = "VOICEMODE";
 	private static final String TAG_NIKNAME = "NIKNAME";
@@ -27,8 +30,6 @@ public class LG6720LVMBModel extends HombotModel {
 	private static final String TAG_RESP_RSVSTATE = "RESP_RSVSTATE";
 	
 	private boolean modelInited = false;
-	
-	private boolean modelChangeDetected = true;
 	
 	private boolean turboEnabled = false;
 	private String robotState;
@@ -86,11 +87,17 @@ public class LG6720LVMBModel extends HombotModel {
 	}
 	
 	protected void apply(JsonResponse response) {
-		this.modelChangeDetected = false;
+		BigInteger preParseChecksum = this.getChecksum();
 		
 		this.parsePayload(response.getPayload());
 		
-		if(!this.modelInited || !modelChangeDetected) {
+		if(!this.modelInited) {
+			return;
+		}
+		
+		BigInteger postParseChecksum = this.getChecksum();
+		
+		if(preParseChecksum.compareTo(postParseChecksum) == 0) {
 			return;
 		}
 		
@@ -151,42 +158,34 @@ public class LG6720LVMBModel extends HombotModel {
 		switch(keys[keys.length - 1]) {
 			case TAG_TURBO: {
 				this.turboEnabled = Boolean.parseBoolean(value);
-				this.modelChangeDetected = true;
 				break;
 			}
 			case TAG_ROBOT_STATE: {
 				this.robotState = value;
-				this.modelChangeDetected = true;
 				break;
 			}
 			case TAG_REPEAT: {
 				this.repeatEnabled = Boolean.parseBoolean(value);
-				this.modelChangeDetected = true;
 				break;
 			}
 			case TAG_BATTERY_STATUS: {
 				this.batteryLevel = Integer.parseInt(value);
-				this.modelChangeDetected = true;
 				break;
 			}
 			case TAG_CLEANING_MODE: {
 				this.cleaningMode = value;
-				this.modelChangeDetected = true;
 				break;
 			}
 			case TAG_NIKNAME: {
 				this.nickname = value;
-				this.modelChangeDetected = true;
 				break;
 			}
 			case TAG_VERSION: {
 				this.version = value;
-				this.modelChangeDetected = true;
 				break;
 			}
 			case TAG_VOICEMODE: {
 				this.voiceMode = value;
-				this.modelChangeDetected = true;
 				break;
 			}
 			case TAG_JOYSTICK: {
@@ -196,13 +195,11 @@ public class LG6720LVMBModel extends HombotModel {
 					this.direction = null;
 				}
 				
-				this.modelChangeDetected = true;
 				break;
 			}
 			case TAG_RESP_RSVSTATE: {
 				if(!Boolean.valueOf(value)) {
 					this.reservation = null;
-					this.modelChangeDetected = true;
 				}
 			}
 		}
