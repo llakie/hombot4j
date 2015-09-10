@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.bytevalue.hb4j.HombotModel;
 import de.bytevalue.hb4j.HombotModelListener;
 import de.bytevalue.hb4j.joystick.JoystickControlKeyAdapter;
 import de.bytevalue.hb4j.joystick.JoystickDirection;
@@ -25,13 +26,12 @@ import de.bytevalue.hb4j.json.JsonConnection;
 import de.bytevalue.hb4j.json.JsonRequest;
 import de.bytevalue.hb4j.json.JsonResponse;
 import de.bytevalue.hb4j.lg6720lvmb.LG6720LVMB;
-import de.bytevalue.hb4j.lg6720lvmb.LG6720LVMBModel;
 
 public class LG6720LVMBUI extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private LG6720LVMB bot;
-	private LG6720LVMBModel model;
+	private HombotModel model;
 	
 	private JTextField tfCommand;
 	private JButton btSendCommand;

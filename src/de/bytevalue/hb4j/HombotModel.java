@@ -7,7 +7,9 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Iterator;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import de.bytevalue.hb4j.json.JsonConnection;
@@ -70,5 +72,35 @@ public abstract class HombotModel extends JsonConnectionListenerPool<HombotModel
 		}
 	}
 	
+	protected void parseJsonArray(JSONArray array) {
+		for(int i = 0; i < array.length(); i++) {
+			if(array.optJSONArray(i) != null) {
+				this.parseJsonArray(array.optJSONArray(i));
+			}
+			else if(array.optJSONObject(i) != null) {
+				this.parseJsonObject(array.optJSONObject(i));
+			}
+		}
+	}
+	
+	protected void parseJsonObject(JSONObject object) {
+		Iterator<String> it = object.keys();
+		
+		while(it.hasNext()) {
+			String key = it.next();
+			
+			if(object.optJSONArray(key) != null) {
+				this.parseJsonArray(object.optJSONArray(key));
+			}
+			else if(object.optJSONObject(key) != null) {
+				this.parseJsonObject(object.optJSONObject(key));
+			}
+			else if(object.optString(key) != null) {
+				this.parseKeyValue(key, object.optString(key));
+			}
+		}
+	}
+	
 	protected abstract void parse(JsonResponse response, JSONObject payload);
+	protected abstract void parseKeyValue(String key, String value);
 }

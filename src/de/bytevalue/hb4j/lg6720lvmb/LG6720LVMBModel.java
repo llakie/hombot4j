@@ -112,18 +112,7 @@ public class LG6720LVMBModel extends HombotModel {
 		this.parseJsonObject(payload);
 	}
 	
-	private void parseJsonArray(JSONArray array) {
-		for(int i = 0; i < array.length(); i++) {
-			if(array.optJSONArray(i) != null) {
-				this.parseJsonArray(array.optJSONArray(i));
-			}
-			else if(array.optJSONObject(i) != null) {
-				this.parseJsonObject(array.optJSONObject(i));
-			}
-		}
-	}
-	
-	private void parseJsonObject(JSONObject object) {
+	protected void parseJsonObject(JSONObject object) {
 		Iterator<String> it = object.keys();
 		
 		while(it.hasNext()) {
@@ -161,7 +150,7 @@ public class LG6720LVMBModel extends HombotModel {
 		}
 	}
 	
-	private void parseKeyValue(String key, String value) {
+	protected void parseKeyValue(String key, String value) {
 		switch(key) {
 			case TAG_TURBO: {
 				this.turboEnabled = Boolean.parseBoolean(value);
