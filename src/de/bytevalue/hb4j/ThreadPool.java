@@ -10,14 +10,10 @@ public final class ThreadPool {
 	private ExecutorService pool;
 	
 	private ThreadPool() {
-		this.pool = Executors.newCachedThreadPool();
+		this.reinit();
 	}
 	
-	static {
-		singleton = new ThreadPool();
-	}
-	
-	public final void init() {
+	public synchronized final void reinit() {
 		this.shutdown();
 		this.pool = Executors.newCachedThreadPool();
 	}
@@ -45,7 +41,11 @@ public final class ThreadPool {
 		this.pool.shutdown();
 	}
 	
-	public static final ThreadPool getInstance() {
-		return singleton;
+	public synchronized static final ThreadPool getInstance() {
+		if(ThreadPool.singleton == null) {
+			ThreadPool.singleton = new ThreadPool();
+		}
+		
+		return ThreadPool.singleton;
 	}
 }
