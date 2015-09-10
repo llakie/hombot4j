@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import de.bytevalue.hb4j.HombotModel;
 import de.bytevalue.hb4j.HombotModelListener;
+import de.bytevalue.hb4j.ThreadPool;
 import de.bytevalue.hb4j.joystick.JoystickControlKeyAdapter;
 import de.bytevalue.hb4j.joystick.JoystickDirection;
 import de.bytevalue.hb4j.json.JsonConnection;
@@ -88,6 +89,7 @@ public class LG6720LVMBUI extends JFrame {
 			@Override
 			public void windowClosed(WindowEvent e) {
 				bot.disconnect();
+				ThreadPool.getInstance().shutdown();
 			}
 		});
 	}

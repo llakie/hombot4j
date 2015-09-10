@@ -31,8 +31,6 @@ public class HombotConnection extends JsonConnectionListenerPool<JsonConnectionL
 	}
 	
 	public final void connect() throws IOException {
-		JsonConnectionListener.initThreadPool();
-		
 		JsonConnection sessionConnection = new JsonConnection(this.ip, SESSION_PORT);
 		
 		sessionConnection.addListener(this);
@@ -66,8 +64,6 @@ public class HombotConnection extends JsonConnectionListenerPool<JsonConnectionL
 		if(this.periodicTask != null) {
 			this.periodicTask.cancel();
 		}
-		
-		JsonConnectionListener.shutdownThreadPool();
 	}
 	
 	public final synchronized int sendRequest(JsonRequest request) throws IOException {

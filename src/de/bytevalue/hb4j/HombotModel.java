@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import de.bytevalue.hb4j.json.JsonConnection;
-import de.bytevalue.hb4j.json.JsonConnectionListener;
 import de.bytevalue.hb4j.json.JsonConnectionListenerPool;
 import de.bytevalue.hb4j.json.JsonResponse;
 
@@ -29,7 +28,7 @@ public abstract class HombotModel extends JsonConnectionListenerPool<HombotModel
 	
 	protected void triggerModelChange(int responseId) {
 		for(HombotModelListener listener: this.listeners) {
-			JsonConnectionListener.threadPool.execute(() -> {
+			ThreadPool.getInstance().execute(() -> {
 				listener.onModelChange(responseId);
 			});
 		}
