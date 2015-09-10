@@ -3,17 +3,17 @@ package de.bytevalue.hb4j.lg6720lvmb;
 enum CleanMode {
 	SPOT("CLEAN_SPOT"), CELL("CLEAN_SB"), ZIGZAG("CLEAN_ZZ");
 	
-	private String apiName;
+	private String apiRequestValue;
 
 	private CleanMode(String command) {
-		this.apiName = command;
+		this.apiRequestValue = command;
 	}
 	
-	public String getAPIName() {
-		return apiName;
+	public String getApiRequestValue() {
+		return this.apiRequestValue;
 	}
 	
-	public static CleanMode fromShortName(String name) {
+	public static CleanMode apiResponseValueOf(String name) {
 		switch(name) {
 			case "ZZ": return CleanMode.ZIGZAG;
 			// Case SB

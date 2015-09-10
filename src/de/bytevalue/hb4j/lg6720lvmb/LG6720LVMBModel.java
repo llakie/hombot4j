@@ -1,25 +1,21 @@
 package de.bytevalue.hb4j.lg6720lvmb;
 
-import java.math.BigInteger;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Iterator;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import de.bytevalue.hb4j.HombotModel;
-import de.bytevalue.hb4j.HombotModelListener;
 import de.bytevalue.hb4j.joystick.JoystickDirection;
-import de.bytevalue.hb4j.json.JsonConnectionListener;
 import de.bytevalue.hb4j.json.JsonResponse;
 
 public class LG6720LVMBModel extends HombotModel {
 	private static final long serialVersionUID = -3507480247871144027L;
 	
+	private static final String TAG_RESPONSE = "RESPONSE";
 	private static final String TAG_CONNECT_INIT = "CONNECT_INIT";
 	private static final String TAG_VOICEMODE = "VOICEMODE";
-	private static final String TAG_NIKNAME = "NIKNAME";
+	private static final String TAG_NICKNAME = "NICKNAME";
 	private static final String TAG_VERSION = "VERSION";
 	private static final String TAG_CLEANING_MODE = "MODE";
 	private static final String TAG_BATTERY_STATUS = "BATT";
@@ -35,7 +31,7 @@ public class LG6720LVMBModel extends HombotModel {
 	private String robotState;
 	private boolean repeatEnabled;
 	private int batteryLevel;
-	private String cleaningMode;
+	private CleanMode cleanMode;
 	private String nickname;
 	private String version;
 	private String voiceMode;
@@ -58,8 +54,17 @@ public class LG6720LVMBModel extends HombotModel {
 		return batteryLevel;
 	}
 	
-	public String getCleaningMode() {
-		return cleaningMode;
+	public CleanMode getCleanMode() {
+		return cleanMode;
+	}
+	
+	public void setCleanMode(CleanMode cleanMode) {
+		if(this.cleanMode == cleanMode) {
+			return;
+		}
+		
+		this.cleanMode = cleanMode;
+		this.triggerModelChange(HombotModel.VIRTUAL_RESPONSE_ID);
 	}
 	
 	public String getNickname() {
@@ -78,6 +83,15 @@ public class LG6720LVMBModel extends HombotModel {
 		return this.direction;
 	}
 	
+	public void setDirection(JoystickDirection direction) {
+		if(this.direction == direction) {
+			return;
+		}
+		
+		this.direction = direction;
+		this.triggerModelChange(HombotModel.VIRTUAL_RESPONSE_ID);
+	}
+	
 	public boolean hasReservation() {
 		return this.reservation != null;
 	}
@@ -86,76 +100,69 @@ public class LG6720LVMBModel extends HombotModel {
 		return reservation;
 	}
 	
-	protected void apply(JsonResponse response) {
-		BigInteger preParseChecksum = this.getChecksum();
-		
-		this.parsePayload(response.getPayload());
+	protected void parse(JsonResponse response, JSONObject payload) {
+		if(payload.has(TAG_CONNECT_INIT)) {
+			this.modelInited = true;
+		}
 		
 		if(!this.modelInited) {
 			return;
 		}
 		
-		BigInteger postParseChecksum = this.getChecksum();
-		
-		if(preParseChecksum.compareTo(postParseChecksum) == 0) {
-			return;
-		}
-		
-		for(HombotModelListener listener: this.listeners) {
-			JsonConnectionListener.threadPool.execute(() -> {
-				listener.onModelChange(response.getHeader().getId());
-			});
-		}
+		this.parseJsonObject(payload);
 	}
 	
-	private void parsePayload(JSONObject payload) {
-		if(payload.has(TAG_CONNECT_INIT)) {
-			this.modelInited = true;
-		}
-		
-		this.parseJsonObject(payload, new ArrayDeque<>());
-	}
-	
-	private void parseJsonArray(JSONArray array, Deque<String> keyStack) {
+	private void parseJsonArray(JSONArray array) {
 		for(int i = 0; i < array.length(); i++) {
 			if(array.optJSONArray(i) != null) {
-				this.parseJsonArray(array.optJSONArray(i), keyStack);
+				this.parseJsonArray(array.optJSONArray(i));
 			}
 			else if(array.optJSONObject(i) != null) {
-				this.parseJsonObject(array.optJSONObject(i), keyStack);
+				this.parseJsonObject(array.optJSONObject(i));
 			}
 		}
 	}
 	
-	private void parseJsonObject(JSONObject object, Deque<String> keyStack) {
+	private void parseJsonObject(JSONObject object) {
 		Iterator<String> it = object.keys();
 		
 		while(it.hasNext()) {
 			String key = it.next();
 			
-			keyStack.addLast(key);
-			
 			if(object.optJSONArray(key) != null) {
-				if(key.equals(TAG_RESP_RSVSTATE)) {
-					this.reservation = new Reservation(object.optJSONArray(key));
-				}
-				else {
-					this.parseJsonArray(object.optJSONArray(key), keyStack);
+				JSONArray currentArray = object.optJSONArray(key);
+				
+				switch(key) {
+					case TAG_RESP_RSVSTATE: {
+						this.reservation = new Reservation(currentArray);
+						break;
+					}
+					default: {
+						this.parseJsonArray(currentArray);
+					}
 				}
 			}
 			else if(object.optJSONObject(key) != null) {
-				this.parseJsonObject(object.optJSONObject(key), keyStack);
+				JSONObject currentObject = object.optJSONObject(key);
+				
+				switch(key) {
+					case TAG_NICKNAME: {
+						this.nickname = currentObject.getString(TAG_RESPONSE);
+						break;
+					}
+					default: {
+						this.parseJsonObject(currentObject);
+					}
+				}
 			}
 			else if(object.optString(key) != null) {
-				this.parseKeyValue(keyStack.toArray(new String[0]), object.optString(key));
+				this.parseKeyValue(key, object.optString(key));
 			}
-			
-			keyStack.removeLast();
 		}
 	}
 	
-	private void parseKeyValue(String[] keys, String value) {
-		switch(keys[keys.length - 1]) {
+	private void parseKeyValue(String key, String value) {
+		switch(key) {
 			case TAG_TURBO: {
 				this.turboEnabled = Boolean.parseBoolean(value);
 				break;
@@ -173,10 +180,10 @@ public class LG6720LVMBModel extends HombotModel {
 				break;
 			}
 			case TAG_CLEANING_MODE: {
-				this.cleaningMode = value;
+				this.cleanMode = CleanMode.apiResponseValueOf(value);
 				break;
 			}
-			case TAG_NIKNAME: {
+			case TAG_NICKNAME: {
 				this.nickname = value;
 				break;
 			}

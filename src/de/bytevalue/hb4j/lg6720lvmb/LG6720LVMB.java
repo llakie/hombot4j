@@ -41,8 +41,9 @@ public final class LG6720LVMB extends Hombot<LG6720LVMBModel> implements Joystic
 	// {"COMMAND":{"CLEAN_MODE":"CLEAN_SPOT"}} 	>> {"RESPONSE":"POS"} = Spot Modus
 	// {"COMMAND":{"CLEAN_MODE":"CLEAN_SB"}} 	>> {"RESPONSE":"POS"} = CellByCell Modus
 	// {"COMMAND":{"CLEAN_MODE":"CLEAN_ZZ"}} 	>> {"RESPONSE":"POS"} = ZickZack Modus
-	public final int setCleanMode(CleanMode cleaningMode) throws IOException {
-		return this.sendRequest(new JsonRequest("{\"COMMAND\":{\"CLEAN_MODE\":\"" + cleaningMode.getAPIName() + "\"}}"));
+	public final int setCleanMode(CleanMode cleanMode) throws IOException {
+		this.model.setCleanMode(cleanMode);
+		return this.sendRequest(new JsonRequest("{\"COMMAND\":{\"CLEAN_MODE\":\"" + cleanMode.getApiRequestValue() + "\"}}"));
 	}
 	
 	// {"RESERVATION":"REQ_RSVSTATE"}			>> {"RESERVATION":{"RESP_RSVSTATE":false}}
@@ -112,6 +113,7 @@ public final class LG6720LVMB extends Hombot<LG6720LVMBModel> implements Joystic
 	// {"JOY":"BACKWARD_RIGHT"} 				>> {"RESPONSE":"POS"}
 	// {"JOY":"RELEASE"} 						>> {"RESPONSE":"POS"}
 	public final int move(JoystickDirection direction) throws IOException {
+		this.model.setDirection(direction);
 		return this.sendRequest(new JsonRequest("{\"JOY\":\"" + direction.toString() + "\"}"));
 	}
 

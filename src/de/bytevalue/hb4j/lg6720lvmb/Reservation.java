@@ -9,17 +9,17 @@ public class Reservation implements Serializable {
 	
 	private int hour;
 	private int minute;
-	private boolean isRepeat;
-	private boolean isEnabled;
+	private boolean repeat;
+	private boolean enabled;
 	private CleanMode cleanMode;
 	
 	// ["0","7","12","OOOOOOO","ZZ","false","true"]
 	public Reservation(JSONArray data) {
 		this.hour = data.getInt(1);
 		this.minute = data.getInt(2);
-		this.cleanMode = CleanMode.fromShortName(data.getString(4));
-		this.isRepeat = data.getBoolean(5);
-		this.isEnabled = data.getBoolean(6);
+		this.cleanMode = CleanMode.apiResponseValueOf(data.getString(4));
+		this.repeat = data.getBoolean(5);
+		this.enabled = data.getBoolean(6);
 	}
 	
 	public int getHour() {
@@ -35,10 +35,10 @@ public class Reservation implements Serializable {
 	}
 	
 	public boolean isRepeat() {
-		return this.isRepeat;
+		return this.repeat;
 	}
 	
 	public boolean isEnabled() {
-		return this.isEnabled;
+		return this.enabled;
 	}
 }

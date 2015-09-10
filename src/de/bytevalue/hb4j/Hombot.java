@@ -6,7 +6,7 @@ import de.bytevalue.hb4j.json.JsonRequest;
 
 public abstract class Hombot<T extends HombotModel> {
 	private HombotConnection conn;
-	private T model;
+	protected T model;
 	
 	public Hombot(String ip) {
 		this.model = this.createModel();
