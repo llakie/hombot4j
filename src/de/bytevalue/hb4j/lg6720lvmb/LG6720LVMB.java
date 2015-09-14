@@ -11,10 +11,6 @@ import de.bytevalue.hb4j.joystick.JoystickDirection;
 import de.bytevalue.hb4j.json.JsonRequest;
 
 public final class LG6720LVMB extends Hombot<LG6720LVMBModel> implements JoystickControlListener {
-	// {"CMD_RSV":{"ADD_RSV":{"HOUR":"11","MINUTE":"2","WEEKDAY":"OOOOOOO","CLEANMODE":"ZZ","REPEAT":"true","ENABLE":"true"}}}
-	// {"CMD_RSV":{"EDIT_RSV":{"INDEX":0,"HOUR":"11","MINUTE":"2","WEEKDAY":"OOOOOOO","CLEANMODE":"ZZ","REPEAT":"true","ENABLE":"true"}}}
-	// {"CMD_RSV":{"REMOVE_RSV":{"REMOVENUM":1,"INDEX":0}}}
-	
 	// {"DIAGNOSIS":{"RECENT":"REQUEST"}}		>> {"DIAGNOSIS":{"RECENT":"false"}}
 	// {"DIAGNOSIS": "REQUEST"}					>> {"DIAGNOSIS":{"RESPONSE":{"TOTAL_NUM":"0","TIME":"0","RESULT_LIST":[]}}}
 	// {"BLACKBOX":"REQUEST_ABSTRACT"} 			>> {"BLACKBOX":{"RECENT_ABS":"false"}}
@@ -43,12 +39,12 @@ public final class LG6720LVMB extends Hombot<LG6720LVMBModel> implements Joystic
 	// {"COMMAND":{"CLEAN_MODE":"CLEAN_ZZ"}} 	>> {"RESPONSE":"POS"} = ZickZack Modus
 	public final int setCleanMode(CleanMode cleanMode) throws IOException {
 		this.model.setCleanMode(cleanMode);
-		return this.sendRequest(new JsonRequest("{\"COMMAND\":{\"CLEAN_MODE\":\"" + cleanMode.getApiRequestValue() + "\"}}"));
+		return this.sendRequest(new JsonRequest("{\"COMMAND\":{\"CLEAN_MODE\":\"CLEAN_" + cleanMode.getShortString() + "\"}}"));
 	}
 	
 	// {"RESERVATION":"REQ_RSVSTATE"}			>> {"RESERVATION":{"RESP_RSVSTATE":false}}
 	// {"RESERVATION":"REQ_RSVSTATE"}			>> {"RESERVATION":{"RESP_RSVSTATE":["0","7","12","OOOOOOO","ZZ","false","true"]}}
-	public final int getReservationState() throws IOException{
+	public final int getReservation() throws IOException{
 		// Return values when reservation is present
 		// RESP_RSVSTATE[0] = index
 		// RESP_RSVSTATE[1] = hour
@@ -59,6 +55,25 @@ public final class LG6720LVMB extends Hombot<LG6720LVMBModel> implements Joystic
 		// RESP_RSVSTATE[6] = enable
 		
 		return this.sendRequest(new JsonRequest("{\"RESERVATION\":\"REQ_RSVSTATE\"}"));
+	}
+	
+	// {"RESERVATION":{"EDIT":{"INDEX":"0","HOUR":"12","MINUTE":"0","WEEKDAY":"OOOOOOO","CLEANMODE":"ZZ","REPEAT":"true","ENABLE":"true"}}}"
+	//											>> {"RESERVATION":{"RESP_RSVSTATE":["0","21","0","OOOOOOO","SB","false","true"]}}
+	public final int setReservation(Reservation reservation) throws IOException{
+		String requestString = String.format("{\"RESERVATION\":{\"EDIT\":{\"INDEX\":\"0\",\"HOUR\":\"%d\",\"MINUTE\":\"%d\",\"WEEKDAY\":\"OOOOOOO\",\"CLEANMODE\":\"%2s\",\"REPEAT\":\"%b\",\"ENABLE\":\"%b\"}}}",
+				reservation.getHour(),
+				reservation.getMinute(),
+				reservation.getCleanMode().getShortString(),
+				reservation.isRepeat(),
+				reservation.isEnabled());
+		
+		return this.sendRequest(new JsonRequest(requestString));
+	}
+	
+	// {"RESERVATION":{"REMOVE":{"REMOVENUM":"1","ARR_INDEX":["0"]}}}"
+	//											>> {"RESERVATION":{"RESP_RSVSTATE":false}}
+	public final int removeReservation() throws IOException {
+		return this.sendRequest(new JsonRequest("{\"RESERVATION\":{\"REMOVE\":{\"REMOVENUM\":\"1\",\"ARR_INDEX\":[\"0\"]}}}"));
 	}
 	
 	// {"VERSION":"REQUEST"} 					>> {"VERSION":{"RESPONSE":{"NOW":"13865"}}}
@@ -116,14 +131,14 @@ public final class LG6720LVMB extends Hombot<LG6720LVMBModel> implements Joystic
 		this.model.setDirection(direction);
 		return this.sendRequest(new JsonRequest("{\"JOY\":\"" + direction.toString() + "\"}"));
 	}
-
+	
 	@Override
 	public final int onJoystickDirection(JoystickDirection direction) throws IOException {
 		return this.move(direction);
 	}
 	
 	@Override
-	protected LG6720LVMBModel createModel() {
+	protected LG6720LVMBModel createModelAdapter() {
 		return new LG6720LVMBModel();
 	}
 }

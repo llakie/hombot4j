@@ -12,6 +12,7 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
@@ -26,13 +27,18 @@ import de.bytevalue.hb4j.joystick.JoystickDirection;
 import de.bytevalue.hb4j.json.JsonConnection;
 import de.bytevalue.hb4j.json.JsonRequest;
 import de.bytevalue.hb4j.json.JsonResponse;
+import de.bytevalue.hb4j.lg6720lvmb.CleanMode;
 import de.bytevalue.hb4j.lg6720lvmb.LG6720LVMB;
+import de.bytevalue.hb4j.lg6720lvmb.Reservation;
 
 public class LG6720LVMBUI extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private LG6720LVMB bot;
 	private HombotModel model;
+	
+	private JButton btSetReservation;
+	private JButton btRemoveReservation;
 	
 	private JTextField tfCommand;
 	private JButton btSendCommand;
@@ -54,6 +60,25 @@ public class LG6720LVMBUI extends JFrame {
 		this.btSendCommand = new JButton("Senden");
 		cp.add(this.btSendCommand, BorderLayout.SOUTH);
 		
+		JPanel reservationPanel = new JPanel(new BorderLayout(10, 0));
+		this.btSetReservation = new JButton("Setzen");
+		this.btSetReservation.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setReservation();
+			}
+		});
+		reservationPanel.add(this.btSetReservation, BorderLayout.WEST);
+		this.btRemoveReservation = new JButton("Entfernen");
+		this.btRemoveReservation.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removeReservation();
+			}
+		});
+		reservationPanel.add(this.btRemoveReservation, BorderLayout.EAST);
+		
+		cp.add(reservationPanel, BorderLayout.NORTH);
 		
 		this.btSendCommand.addActionListener(new ActionListener() {
 			@Override
@@ -92,6 +117,25 @@ public class LG6720LVMBUI extends JFrame {
 				ThreadPool.getInstance().shutdown();
 			}
 		});
+	}
+	
+	private void setReservation() {
+		Reservation reservation = new Reservation(CleanMode.CELL, 21, 0, false);
+		try {
+			this.bot.setReservation(reservation);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void removeReservation() {
+		try {
+			this.bot.removeReservation();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void init() {

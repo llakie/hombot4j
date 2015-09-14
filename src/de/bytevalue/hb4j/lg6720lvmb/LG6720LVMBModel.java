@@ -2,6 +2,10 @@ package de.bytevalue.hb4j.lg6720lvmb;
 
 import java.util.Iterator;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -9,6 +13,7 @@ import de.bytevalue.hb4j.HombotModel;
 import de.bytevalue.hb4j.joystick.JoystickDirection;
 import de.bytevalue.hb4j.json.JsonResponse;
 
+@XmlRootElement
 public class LG6720LVMBModel extends HombotModel {
 	private static final long serialVersionUID = -3507480247871144027L;
 	
@@ -25,37 +30,39 @@ public class LG6720LVMBModel extends HombotModel {
 	private static final String TAG_JOYSTICK = "JOY";
 	private static final String TAG_RESP_RSVSTATE = "RESP_RSVSTATE";
 	
-	private boolean modelInited = false;
+	@XmlTransient private boolean modelInited = false;
+	@XmlTransient public boolean turbo = false;
+	@XmlTransient public String robotState;
+	@XmlTransient public boolean repeat;
+	@XmlTransient public int batteryLevel;
+	@XmlTransient public CleanMode cleanMode;
+	@XmlTransient public String nickname;
+	@XmlTransient public String version;
+	@XmlTransient public String voiceMode;
+	@XmlTransient public JoystickDirection direction = null;
+	@XmlTransient public Reservation reservation;
 	
-	private boolean turboEnabled = false;
-	private String robotState;
-	private boolean repeatEnabled;
-	private int batteryLevel;
-	private CleanMode cleanMode;
-	private String nickname;
-	private String version;
-	private String voiceMode;
-	private JoystickDirection direction = null;
-	private Reservation reservation;
+	public LG6720LVMBModel() {}
 	
+	@XmlElement(name="turbo")
 	public boolean isTurboEnabled() {
-		return this.turboEnabled;
+		return this.turbo;
 	}
-	
+	@XmlElement(name="repeat")
 	public boolean isRepeatEnabled() {
-		return this.repeatEnabled;
+		return this.repeat;
 	}
-	
+	@XmlElement(name="state")
 	public String getRobotState() {
-		return robotState;
+		return this.robotState;
 	}
-	
+	@XmlElement(name="battery")
 	public int getBatteryLevel() {
-		return batteryLevel;
+		return this.batteryLevel;
 	}
-	
+	@XmlElement(name="mode")
 	public CleanMode getCleanMode() {
-		return cleanMode;
+		return this.cleanMode;
 	}
 	
 	public void setCleanMode(CleanMode cleanMode) {
@@ -66,19 +73,19 @@ public class LG6720LVMBModel extends HombotModel {
 		this.cleanMode = cleanMode;
 		this.triggerModelChange(HombotModel.VIRTUAL_RESPONSE_ID);
 	}
-	
+	@XmlElement(name="nickname")
 	public String getNickname() {
-		return nickname;
+		return this.nickname;
 	}
-	
+	@XmlElement(name="version")
 	public String getVersion() {
-		return version;
+		return this.version;
 	}
-	
+	@XmlElement(name="voice")
 	public String getVoiceMode() {
-		return voiceMode;
+		return this.voiceMode;
 	}
-	
+	@XmlElement(name="direction")
 	public JoystickDirection getDirection() {
 		return this.direction;
 	}
@@ -95,9 +102,9 @@ public class LG6720LVMBModel extends HombotModel {
 	public boolean hasReservation() {
 		return this.reservation != null;
 	}
-	
+	@XmlElement(name="reservation")
 	public Reservation getReservation() {
-		return reservation;
+		return this.reservation;
 	}
 	
 	protected void parse(JsonResponse response, JSONObject payload) {
@@ -153,7 +160,7 @@ public class LG6720LVMBModel extends HombotModel {
 	protected void parseKeyValue(String key, String value) {
 		switch(key) {
 			case TAG_TURBO: {
-				this.turboEnabled = Boolean.parseBoolean(value);
+				this.turbo = Boolean.parseBoolean(value);
 				break;
 			}
 			case TAG_ROBOT_STATE: {
@@ -161,7 +168,7 @@ public class LG6720LVMBModel extends HombotModel {
 				break;
 			}
 			case TAG_REPEAT: {
-				this.repeatEnabled = Boolean.parseBoolean(value);
+				this.repeat = Boolean.parseBoolean(value);
 				break;
 			}
 			case TAG_BATTERY_STATUS: {
@@ -169,7 +176,7 @@ public class LG6720LVMBModel extends HombotModel {
 				break;
 			}
 			case TAG_CLEANING_MODE: {
-				this.cleanMode = CleanMode.apiResponseValueOf(value);
+				this.cleanMode = CleanMode.valueOfShortString(value);
 				break;
 			}
 			case TAG_NICKNAME: {

@@ -14,9 +14,9 @@ this.model.addListener(new HombotModelListener() {
   }
 
   @Override
-  public void onRequest(JsonRequest request) {
+  public void onBeforeRequest(JsonRequest request) {
     // do sth before the request is sent to the bot
-    super.onRequest(request);
+    super.onBeforeRequest(request);
   }
 
   @Override

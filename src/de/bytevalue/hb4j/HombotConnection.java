@@ -58,6 +58,10 @@ public class HombotConnection extends JsonConnectionListenerPool<JsonConnectionL
 		sessionConnection.sendRequest(new JsonRequest("{\"CONNECT\":\"REQUEST\"}"));
 	}
 	
+	public final boolean isConnected() {
+		return this.jsonConnection.isConnected();
+	}
+	
 	public final void disconnect() {
 		this.jsonConnection.disconnect();
 		
@@ -92,5 +96,5 @@ public class HombotConnection extends JsonConnectionListenerPool<JsonConnectionL
 		this.timer.schedule(this.periodicTask, 3000, 5000);
 		
 		return true;
-	}
+	}	
 }

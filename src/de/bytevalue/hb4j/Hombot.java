@@ -9,7 +9,7 @@ public abstract class Hombot<T extends HombotModel> {
 	protected T model;
 	
 	public Hombot(String ip) {
-		this.model = this.createModel();
+		this.model = this.createModelAdapter();
 		this.conn = new HombotConnection(ip);
 		this.conn.addListener(this.model);
 	}
@@ -18,17 +18,25 @@ public abstract class Hombot<T extends HombotModel> {
 		return this.model;
 	}
 	
+	public boolean isConnected() {
+		return this.conn.isConnected();
+	}
+	
 	public void connect() throws IOException {
-		this.conn.connect();
+		if(!this.isConnected()) {
+			this.conn.connect();
+		}
 	}
 	
 	public void disconnect() {
-		this.conn.disconnect();
+		if(this.isConnected()) {
+			this.conn.disconnect();
+		}
 	}
 	
 	public int sendRequest(JsonRequest request) throws IOException {
 		return this.conn.sendRequest(request);
 	}
 	
-	protected abstract T createModel();
+	protected abstract T createModelAdapter();
 }
