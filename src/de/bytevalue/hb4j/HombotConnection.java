@@ -87,7 +87,9 @@ public class HombotConnection extends JsonConnectionListenerPool<JsonConnectionL
 			@Override
 			public void run() {
 				try {
-					jsonConnection.sendRequest(new JsonRequest("{\"SESSION\":\"ALIVE\"}"));
+					JsonRequest request = new JsonRequest("{\"SESSION\":\"ALIVE\"}");
+					request.setHeartbeat(true);
+					jsonConnection.sendRequest(request);
 				}
 				catch (IOException e) {}
 			}

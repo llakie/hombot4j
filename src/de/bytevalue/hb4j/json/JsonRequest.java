@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 public class JsonRequest {
 	private byte[] payload;
 	private int id;
+	private boolean isHeartbeat = false;
 	
 	public JsonRequest(String payload) {
 		this.payload = payload.getBytes(Charset.forName("UTF-8"));
@@ -14,8 +15,16 @@ public class JsonRequest {
 		return id;
 	}
 	
-	void setId(int id) {
+	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public boolean isHeartbeat() {
+		return this.isHeartbeat;
+	}
+	
+	public void setHeartbeat(boolean isHeartbeat) {
+		this.isHeartbeat = isHeartbeat;
 	}
 	
 	public byte[] getPayload() {

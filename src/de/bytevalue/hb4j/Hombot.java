@@ -2,6 +2,7 @@ package de.bytevalue.hb4j;
 
 import java.io.IOException;
 
+import de.bytevalue.hb4j.json.JsonConnectionListener;
 import de.bytevalue.hb4j.json.JsonRequest;
 
 public abstract class Hombot<T extends HombotModel> {
@@ -26,6 +27,10 @@ public abstract class Hombot<T extends HombotModel> {
 		if(!this.isConnected()) {
 			this.conn.connect();
 		}
+	}
+	
+	public void addConnectionListener(JsonConnectionListener listener) {
+		this.conn.addListener(listener);
 	}
 	
 	public void disconnect() {
