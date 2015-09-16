@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import de.bytevalue.hb4j.HombotModel;
 import de.bytevalue.hb4j.HombotModelListener;
 import de.bytevalue.hb4j.ThreadPool;
+import de.bytevalue.hb4j.joystick.JoystickControl;
 import de.bytevalue.hb4j.joystick.JoystickControlKeyAdapter;
 import de.bytevalue.hb4j.joystick.JoystickDirection;
 import de.bytevalue.hb4j.json.JsonConnection;
@@ -97,7 +98,8 @@ public class LG6720LVMBUI extends JFrame {
 		
 		this.setFocusable(true);
 		
-		JoystickControlKeyAdapter adapter = new JoystickControlKeyAdapter(this.bot);
+		JoystickControl control = new JoystickControl(this.bot);
+		JoystickControlKeyAdapter adapter = new JoystickControlKeyAdapter(control);
 		
 		adapter.mapDirectionToKeyCodes(JoystickDirection.FORWARD, KeyEvent.VK_UP);
 		adapter.mapDirectionToKeyCodes(JoystickDirection.FORWARD_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_RIGHT);

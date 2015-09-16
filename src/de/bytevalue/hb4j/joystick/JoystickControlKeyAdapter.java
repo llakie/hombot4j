@@ -15,10 +15,10 @@ public class JoystickControlKeyAdapter extends KeyAdapter {
 	private List<Integer> pressedKeyCodes;
 	private JoystickKeyMapping keyMapping;
 	
-	public JoystickControlKeyAdapter(JoystickControlListener listener) {
+	public JoystickControlKeyAdapter(JoystickControl control) {
 		this.pressedKeyCodes = new ArrayList<>();
 		this.timer = new Timer();
-		this.control = new JoystickControl(listener);
+		this.control = control;
 		this.keyMapping = new JoystickKeyMapping();
 	}
 	
